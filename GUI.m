@@ -24,6 +24,10 @@ function puntoInicial=getPuntoInicial(hObject)
   puntoInicial=str2num(get(hObject,'string'))
 endfunction
 
+function metodo=getMetodo(hObject)
+  metodo=strcat(get(hObject,'tag'))
+endfunction
+
 f = dialog ("name", "Ecuación Deferencial No Lineal", "position", [250 180 825 420]);
 
 gp1 = uibuttongroup (f, "Position", [ 0.05 0.47 0.55 0.4]);
@@ -51,24 +55,14 @@ txtPuntoInicial = uicontrol (gp1, "style", "edit","callback",@getPuntoInicial, "
 gp = uibuttongroup (f, "Position", [ 0.65 0.47 0.29 0.4]);
 lblEleccion = uicontrol (gp, "style", "text", "string", "Elegir Método Númerico", "position",[20 135 150 30]);
 % create a buttons in the group
-b1 = uicontrol (gp, "style", "radiobutton", ...
-                "string", "Método de Euler", ...
-                "Position", [ 40 108 150 30 ]);
-b2 = uicontrol (gp, "style", "radiobutton", ...
-                "string", "Método del Punto Medio", ...
-                "Position", [ 40 81 175 30 ]);
-b3 = uicontrol (gp, "style", "radiobutton", ...
-                "string", "Método de Heun", ...
-                "Position", [ 40 54 150 30]);
-b4 = uicontrol (gp, "style", "radiobutton", ...
-                "string", "Método de Runge-Kutta", ...
-                "Position", [ 40 27 175 30]);
-b5 = uicontrol (gp, "style", "radiobutton", ...
-                "string", "Todos los anteriores", ...
-                "Position", [ 40 0 225 30 ]);
+b1 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler", "Position", [ 40 108 150 30 ], "callback", @getMetodo, "tag","euler");
+b2 = uicontrol (gp, "style", "radiobutton", "string", "Método del Punto Medio", "Position", [ 40 81 175 30], "callback", @getMetodo, "tag","medio");
+b3 = uicontrol (gp, "style", "radiobutton", "string", "Método de Heun", "Position", [ 40 54 150 30], "callback", @getMetodo, "tag","heun");
+b4 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler Modificado", "Position", [ 40 27 175 30], "callback", @getMetodo, "tag","modif");
+b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "Position", [ 40 0 225 30 ], "callback", @getMetodo, "tag","todos");
 
-b1 = uicontrol (f, "string", "Resolver", "position",[250 130 150 40]);
-b2 = uicontrol (f, "string", "Ver gráficos", "position",[420 130 150 40]);
+btn1 = uicontrol (f, "string", "Resolver", "position",[250 130 150 40]);
+btn2 = uicontrol (f, "string", "Ver gráficos", "position",[420 130 150 40]);
 
 %[T, L_X] = table (X)
 %[T, Valor, Error] = table (2, 4);
