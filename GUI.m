@@ -1,57 +1,47 @@
-<<<<<<< HEAD
 clc;clear;
+
 function longitud=getLongitud(hObject)
   longitud=str2num(get(hObject,'string'));
 endfunction
+
 function gravedad=getGravedad(hObject)
   gravedad=str2num(get(hObject,'string'));
 endfunction
+
 function inferior=getInferior(hObject)
   inferior=str2num(get(hObject,'string'));
 endfunction
+
 function superior=getSuperior(hObject)
   superior=str2num(get(hObject,'string'));
 endfunction
 
-f = dialog ("name", "Ecuación Deferencial No Lineal");
+function iteraciones=getIteraciones(hObject)
+  iteraciones=str2num(get(hObject,'string'));
+endfunction
 
-lblTema = uicontrol (f, "style", "text", "string", "SOLUCIÓN NUMÉRICA DE LA ECUACIÓN DIFERENCIAL NO LINEAL QUE DESCRIBE LAS OSCILACIONES DEL PÉNDULO SIMPLE ", "position",[20 370 800 80]);
-lblIngresar = uicontrol (f, "style", "text", "string", "Ingresar Datos", "position",[0 360 150 40]);
-lblLongitud = uicontrol (f, "style", "text", "string", "Longitud:", "position",[15 330 150 20]);
-txtLongitud = uicontrol (f, "style", "edit", "position",[200 330 100 20],'tag','longitud','callback',@getLongitud);
-lblGravedad = uicontrol (f, "style", "text", "string", "Gravedad:", "position",[15 300 150 20]);
-txtGravedad = uicontrol (f, "style", "edit", "position",[200 300 100 20],'tag','gravedad','callback',@getGravedad);
-lblInferior = uicontrol (f, "style", "text", "string", "Límite inferior:", "position",[15 270 150 20]);
-txtInferior = uicontrol (f, "style", "edit", "position",[200 270 100 20],'tag','inferior','callback',@getInferior);
-lblSuperior = uicontrol (f, "style", "text", "string", "Límite inferior:", "position",[15 240 150 20]);
-txtInferior = uicontrol (f, "style", "edit", "position",[200 240 100 20],'tag','superior','callback',@getSuperior);
-=======
+function puntoInicial=getPuntoInicial(hObject)
+  puntoInicial=str2num(get(hObject,'string'));
+endfunction
+
 f = dialog ("name", "Ecuación Deferencial No Lineal", "position", [250 180 825 420]);
 
 gp1 = uibuttongroup (f, "Position", [ 0.05 0.47 0.55 0.4]);
 lblTema = uicontrol (f, "style", "text", "string", "SOLUCIÓN NUMÉRICA DE LA ECUACIÓN DIFERENCIAL NO LINEAL QUE DESCRIBE LAS OSCILACIONES DEL PÉNDULO SIMPLE ", "position",[7 367 800 70]);
 lblIngresar = uicontrol (gp1, "style", "text", "string", "Ingresar Datos", "position",[0 135 120 30]);
 lblLongitud = uicontrol (gp1, "style", "text", "string", "Longitud:", "position",[0 95 120 22]);
-txtLongitud = uicontrol (gp1, "style", "edit", "position",[125 95 80 22]);
+txtLongitud = uicontrol (gp1, "style", "edit", "position",[125 95 80 22],'callback',@getLongitud);
 lblGravedad = uicontrol (gp1, "style", "text", "string", "Gravedad:", "position",[0 60 120 22]);
-txtGravedad = uicontrol (gp1, "style", "edit", "position",[125 60 80 22]);
+txtGravedad = uicontrol (gp1, "style", "edit", "position",[125 60 80 22],'callback',@getGravedad);
 lblIte = uicontrol (gp1, "style", "text", "string", "N° de iteraciones:", "position",[0 25 120 22 ]);
-txtIte = uicontrol (gp1, "style", "edit", "position",[125 25 80 22 ]);
+txtIte = uicontrol (gp1, "style", "edit", "position",[125 25 80 22 ],'callback',@getIteraciones);
 lblInferior = uicontrol (gp1, "style", "text", "string", "Límite inferior:", "position",[225 95 120 22]);
-txtInferior = uicontrol (gp1, "style", "edit", "position",[350 95 80 22]);
+txtInferior = uicontrol (gp1, "style", "edit", "position",[350 95 80 22],@getInferior);
 lblSuperior = uicontrol (gp1, "style", "text", "string", "Límite superior:", "position",[225 60 120 22]);
-txtSperior = uicontrol (gp1, "style", "edit", "position",[350 60 80 22]);
+txtSperior = uicontrol (gp1, "style", "edit", "position",[350 60 80 22],@getSuperior);
 lblPuntoInicial = uicontrol (gp1, "style", "text", "string", "Valor inicial:", "position",[225 25 120 22]);
-txtPuntoInicial = uicontrol (gp1, "style", "edit", "position",[350 25 80 22 ]);
+txtPuntoInicial = uicontrol (gp1, "style", "edit", "position",[350 25 80 22 ],@getPuntoInicial);
 
->>>>>>> f5700a61290b6ba87d98850d4c4707099b842b86
-
-
-
-% create an edit control
-#e1 = uicontrol (f, "style", "edit", "string", "Text", "position",[10 60 300 40]);
-          % create a checkbox
-<<<<<<< HEAD
 lblEleccion = uicontrol (f, "style", "text", "string", "Elegir Método Númerico", "position",[30 190 150 40]);
 gp = uibuttongroup(f,"Title","Seleccione una opcion", "position",[30 190 150 240]);
 c1 = uicontrol(gp, "style", "radiobutton", "string", "Método de Euler", "position",[50 160 150 40]);
@@ -64,7 +54,7 @@ c5 = uicontrol(gp, "style", "radiobutton", "string", "Todos los anteriores", "po
 % create a button (default style)
 b1 = uicontrol (f, "string", "Resolver", "position",[80 10 150 40], "callback",@resolver);
 b2 = uicontrol (f, "string", "Ver gráficos", "position",[250 10 150 40]);
-=======
+
 
 %c1 = uicontrol (f, "style", "radiobutton", "string", "Método de Euler", "position",[50 110 150 40]);
 %c2 = uicontrol (f, "style", "radiobutton", "string", "Método del Punto Medio", "position",[250 80 175 40]);
@@ -91,16 +81,6 @@ b4 = uicontrol (gp, "style", "radiobutton", ...
 b5 = uicontrol (gp, "style", "radiobutton", ...
                 "string", "Todos los anteriores", ...
                 "Position", [ 40 0 225 30 ]);
-
-
-
-          % create figure without a default toolbar
-          
-% create a button (default style)
-b1 = uicontrol (f, "string", "Resolver", "position",[250 130 150 40]);
-b2 = uicontrol (f, "string", "Ver gráficos", "position",[420 130 150 40]);
->>>>>>> f5700a61290b6ba87d98850d4c4707099b842b86
-
 
 %[T, L_X] = table (X)
 %[T, Valor, Error] = table (2, 4);
