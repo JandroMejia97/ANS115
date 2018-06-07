@@ -1,19 +1,22 @@
 clc;clear;
 
-function [logintud gravedad inferior superior iteraciones punto metodo] = btnResolver(l,g,i,s,it,p,m)
-  longitud=str2num(get(l,'string'));
-  gravedad=str2num(get(g,'string'));
-  inferior=str2num(get(i,'string'));
-  superior=str2num(get(s,'string'));
-  iteraciones=str2num(get(it,'string'));
-  punto=str2num(get(p,'string'));
-  if get(m,"selected") == true
-    metodo=strcat(get(m,'tag'))
+function entrada = btnResolver(editText)
+  entrada(1)=str2num(get(editText(1),'string'));
+  entrada(2)=str2num(get(editText(2),'string'));
+  entrada(3)=str2num(get(editText(3),'string'));
+  entrada(4)=str2num(get(editText(4),'string'));
+  entrada(5)=str2num(get(editText(5),'string'));
+  entrada(6)=str2num(get(editText(6),'string'));
+  l=get(editText(7), 'selected')
+  for i=1:length(editText(7))
+    if get(editText(7)(i), 'selected') == "on"
+      entrada(7)=get(editText(7)(i),'tag')
+    end
   end
 endfunction
 
-function metodo=getMetodo(hObject)
-  
+function entrada = getMetodo(h) 
+  entrada=get(h,'tag');
 endfunction
 
 f = dialog ("name", "Ecuación Deferencial No Lineal", "position", [250 180 825 420]);
@@ -42,15 +45,15 @@ txtPuntoInicial = uicontrol (gp1, "style", "edit", "position",[350 25 80 22 ]);
 
 gp = uibuttongroup (gpp, "Position", [ 0.65 0.47 0.29 0.4], "title","Elegir Método Númerico");
 % create a buttons in the group
-b1 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler", "Position", [ 40 108 150 30 ], "callback", @getMetodo, "tag","euler");
-b2 = uicontrol (gp, "style", "radiobutton", "string", "Método del Punto Medio", "Position", [ 40 81 175 30], "callback", @getMetodo, "tag","medio");
-b3 = uicontrol (gp, "style", "radiobutton", "string", "Método de Heun", "Position", [ 40 54 150 30], "callback", @getMetodo, "tag","heun");
-b4 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler Modificado", "Position", [ 40 27 175 30], "callback", @getMetodo, "tag","modif");
-b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "Position", [ 40 0 225 30 ], "callback", @getMetodo, "tag","todos");
+b1 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler", "Position", [ 40 108 150 30 ], "tag","euler", "callback","getMetodo(b1)");
+b2 = uicontrol (gp, "style", "radiobutton", "string", "Método del Punto Medio", "Position", [ 40 81 175 30], "tag","medio", "callback","getMetodo(b2)");
+b3 = uicontrol (gp, "style", "radiobutton", "string", "Método de Heun", "Position", [ 40 54 150 30], "tag","heun", "callback","getMetodo(b3)");
+b4 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler Modificado", "Position", [ 40 27 175 30], "tag","modif", "callback","getMetodo(b4)");
+b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "Position", [ 40 0 225 30 ], "tag","todos", "callback","getMetodo(b5)");
 
-sel = get(gp, 'selectedobject')
+inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoInicial, gp];
 
-btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback","btnResolver(txtLongitud,txtGravedad, txtInferior,txtSuperior,txtIte,txtPuntoInicial,sel)");
+btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback","entrada=btnResolver(inputBox)");
 btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 130 150 40]);
 
 %[T, L_X] = table (X)
