@@ -7,7 +7,18 @@ function [entrada metodo]= btnResolver(editText, gp)
   entrada(4)=str2num(get(editText(4),'string'));
   entrada(5)=str2num(get(editText(5),'string'));
   entrada(6)=str2num(get(editText(6),'string'));
-  metodo=get(get(gp, 'selectedobject'),'tag');
+  switch get(get(gp,'selectedobject'),'tag')
+      case "euler", [t,w]=euler(entrada(3),entrada(4),entrada(5),entrada(6));
+      case "medio", [t,w]=puntoMedio(entrada(3),entrada(4),entrada(5),entrada(6));
+      case "heun", [t,w]=heun(entrada(3),entrada(4),entrada(5),entrada(6));
+      case "modif", [t,w]=heun(entrada(2),entrada(3),entrada(4),entrada(5),entrada(6));
+      otherwise,
+            [t w]=euler(entrada(3),entrada(4),entrada(5),entrada(6));
+            [t w]=puntoMedio(entrada(3),entrada(4),entrada(5),entrada(6));
+            [t w]=heun(entrada(3),entrada(4),entrada(5),entrada(6));
+            [t w]=euler(entrada(3),entrada(4),entrada(5),entrada(6));
+    end
+  set(hEdit3, 'String',[t w]);
 endfunction
 
 function entrada = getMetodo(h) 
@@ -51,6 +62,69 @@ inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoIn
 btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback","btnResolver(inputBox, gp)");
 btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 130 150 40]);
 
+hEdit = uicontrol('Style','text', 'Position',[300 20 180 100], 'String','');
 %[T, L_X] = table (X)
 %[T, Valor, Error] = table (2, 4);
 %fprinf('\n ti,wi,yi=y(ti), Error')
+
+function f=Funcion(l,g,ya,a)
+  t(1)=a;
+  w(1)=ya;
+  f=[w, -(g/l)*sin(t)]
+endfunction
+
+function [t w]=Euler(a,b,N,ya)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*f(t(i),w(i));
+    t(i+1)=a+i*h;
+  endfor
+  #for I=1:N
+  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
+ #end
+endfunction
+
+function [t w]=PuntoMedio(a,b,N,ya)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h*f(t(i),w(i))/2);;
+    t(i+1)=a+i*h;
+  endfor
+  #for I=1:N
+  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
+ #end
+endfunction
+
+function [t w]=EulerModificado(a,b,N,ya)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    k=h*f(t(i),w(i))
+    c=h/2;
+    w(i+1)=w(i)+c*(f(t(i),w(i))+f(t(i),y(i)+k));
+    t(i+1)=a+i*h;
+  endfor
+  #for I=1:N
+  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
+ #end
+endfunction
+  
+function [t, w]=Heun(a,b,N,ya)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    k=(2/3)*h*f(t(i),w(i))
+    c=h/4;
+    w(i+1)=w(i)+c*(f(t(i),w(i))+3*f(t(i)+ (2/3)*h,w(i)+k));
+    t(i+1)=a+i*h;
+  endfor
+  #for I=1:N
+  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
+ #end
+endfunction  
