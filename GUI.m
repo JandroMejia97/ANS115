@@ -1,5 +1,60 @@
 clc;clear;
 
+function graficar(x, w, lbl, lineS, m, c)
+  g1 = plot(t, w,lbl,"linestyle",lineS, "marker",m, "color",c);
+  set(g1, 'LineWidth', 2);
+  legend(lbl);
+  ylabel('t');
+  xlabel('w');
+endfunction
+
+
+function f=Funcion(l,g,ya,a)
+  t(1)=a;
+  w(1)=ya;
+  f=[w, -(g/l)*sin(t)]
+endfunction
+
+function [t w]=Euler(a,b,N, ya,f)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*f(t(i),w(i));
+    t(i+1)=a+i*h;
+  endfor
+endfunction
+
+function [t w]=PuntoMedio(a,b,N,ya,f)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h*f(t(i),w(i))/2);
+    t(i+1)=a+i*h;
+  endfor
+endfunction
+
+function [t w]=EulerModificado(a,b,N,ya,f)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*(f(t(i),w(i))+f(t(i-1),w(i)+h*f(t(i),w(i))))/2;
+    t(i+1)=a+i*h;
+  endfor
+endfunction
+
+function [t w]=Heun(a,b,N,ya,f)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*(f(t(i),w(i))+3*f(t(i)+2*h/3,w(i)+2*h*f(t(i),w(i))/3))/4;
+    t(i+1)=a+i*h;
+  endfor
+endfunction
+  
 function [entrada metodo]= btnResolver(editText, gp)
   entrada(1)=str2num(get(editText(1),'string'));
   entrada(2)=str2num(get(editText(2),'string'));
@@ -7,17 +62,40 @@ function [entrada metodo]= btnResolver(editText, gp)
   entrada(4)=str2num(get(editText(4),'string'));
   entrada(5)=str2num(get(editText(5),'string'));
   entrada(6)=str2num(get(editText(6),'string'));
-  switch get(get(gp,'selectedobject'),'tag')
-      case "euler", [t,w]=euler(entrada(3),entrada(4),entrada(5),entrada(6));
-      case "medio", [t,w]=puntoMedio(entrada(3),entrada(4),entrada(5),entrada(6));
-      case "heun", [t,w]=heun(entrada(3),entrada(4),entrada(5),entrada(6));
-      case "modif", [t,w]=heun(entrada(2),entrada(3),entrada(4),entrada(5),entrada(6));
-      otherwise,
-            [t w]=euler(entrada(3),entrada(4),entrada(5),entrada(6));
-            [t w]=puntoMedio(entrada(3),entrada(4),entrada(5),entrada(6));
-            [t w]=heun(entrada(3),entrada(4),entrada(5),entrada(6));
-            [t w]=euler(entrada(3),entrada(4),entrada(5),entrada(6));
+  metodo=get(get(gp,'selectedobject'),'tag')
+  figure;
+  hold on;
+  grid on;
+  f=Funcion(entrada(1),entrada(2),entrada(4),entrada(6)); 
+  switch metodo
+    case "euler"
+      title("Euler");
+      [t,w]=Euler(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w,"Euler","--","*","r");
+    case "medio"
+      title("Punto Medio");
+      [t,w]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w, "PuntoMedio", "-", "o", "g");
+    case "heun"
+      title("Huen");
+      [t,w]=Heun(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w, "Heun", ":", "x", "b");
+    case "modif"
+      title("Euler modificado");
+      [t,w]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w, "Euler Modificado", "-.","diamond","o");
+    otherwise
+      title("Todos los Metodos");
+      [t w]=Euler(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w,"Euler","--","*","r");
+      [t w]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w, "PuntoMedio", "-", "o", "g");
+      [t w]=Heun(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w, "Heun", ":", "x", "b");
+      [t w]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w, "Euler Modificado", "-.","diamond","o");
     end
+    hold off;
   set(hEdit3, 'String',[t w]);
 endfunction
 
@@ -66,65 +144,3 @@ hEdit = uicontrol('Style','text', 'Position',[300 20 180 100], 'String','');
 %[T, L_X] = table (X)
 %[T, Valor, Error] = table (2, 4);
 %fprinf('\n ti,wi,yi=y(ti), Error')
-
-function f=Funcion(l,g,ya,a)
-  t(1)=a;
-  w(1)=ya;
-  f=[w, -(g/l)*sin(t)]
-endfunction
-
-function [t w]=Euler(a,b,N,ya)
-  h=(b-a)/N;
-  t(1)=a;
-  w(1)=ya;
-  for i=1:N
-    w(i+1)=w(i)+h*f(t(i),w(i));
-    t(i+1)=a+i*h;
-  endfor
-  #for I=1:N
-  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
- #end
-endfunction
-
-function [t w]=PuntoMedio(a,b,N,ya)
-  h=(b-a)/N;
-  t(1)=a;
-  w(1)=ya;
-  for i=1:N
-    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h*f(t(i),w(i))/2);;
-    t(i+1)=a+i*h;
-  endfor
-  #for I=1:N
-  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
- #end
-endfunction
-
-function [t w]=EulerModificado(a,b,N,ya)
-  h=(b-a)/N;
-  t(1)=a;
-  w(1)=ya;
-  for i=1:N
-    k=h*f(t(i),w(i))
-    c=h/2;
-    w(i+1)=w(i)+c*(f(t(i),w(i))+f(t(i),y(i)+k));
-    t(i+1)=a+i*h;
-  endfor
-  #for I=1:N
-  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
- #end
-endfunction
-  
-function [t, w]=Heun(a,b,N,ya)
-  h=(b-a)/N;
-  t(1)=a;
-  w(1)=ya;
-  for i=1:N
-    k=(2/3)*h*f(t(i),w(i))
-    c=h/4;
-    w(i+1)=w(i)+c*(f(t(i),w(i))+3*f(t(i)+ (2/3)*h,w(i)+k));
-    t(i+1)=a+i*h;
-  endfor
-  #for I=1:N
-  #  printf('    %5.3f    %11.7f\n',t(I),w(I))   
- #end
-endfunction  

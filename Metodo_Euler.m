@@ -21,7 +21,7 @@ function [t w]=PuntoMedio(a,b,N,ya)
   t(1)=a;
   w(1)=ya;
   for i=1:N
-    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h*f(t(i),w(i))/2);;
+    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h*f(t(i),w(i))/2);
     t(i+1)=a+i*h;
   endfor
 endfunction
@@ -31,9 +31,19 @@ function [t w]=EulerModificado(a,b,N,ya)
   t(1)=a;
   w(1)=ya;
   for i=1:N
-    w(i+1)=w(i)+h*(f(t(i),w(i))+f()/2;
+    w(i+1)=w(i)+h*(f(t(i),w(i))+f(t(i-1),w(i)+h*f(t(i),w(i))))/2;
     t(i+1)=a+i*h;
   endfor
 endfunction
-  
+
+function [t w]=Heun(a,b,N,ya)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    w(i+1)=w(i)+h*(f(t(i),w(i))+3*f(t(i)+2*h/3,w(i)+2*h*f(t(i),w(i))/3))/4;
+    t(i+1)=a+i*h;
+  endfor
+endfunction
+
   
