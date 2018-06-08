@@ -1,18 +1,13 @@
 clc;clear;
 
-function entrada = btnResolver(editText)
+function [entrada metodo]= btnResolver(editText, gp)
   entrada(1)=str2num(get(editText(1),'string'));
   entrada(2)=str2num(get(editText(2),'string'));
   entrada(3)=str2num(get(editText(3),'string'));
   entrada(4)=str2num(get(editText(4),'string'));
   entrada(5)=str2num(get(editText(5),'string'));
   entrada(6)=str2num(get(editText(6),'string'));
-  l=get(editText(7), 'selected')
-  for i=1:length(editText(7))
-    if get(editText(7)(i), 'selected') == "on"
-      entrada(7)=get(editText(7)(i),'tag')
-    end
-  end
+  metodo=get(get(gp, 'selectedobject'),'tag');
 endfunction
 
 function entrada = getMetodo(h) 
@@ -51,9 +46,9 @@ b3 = uicontrol (gp, "style", "radiobutton", "string", "Método de Heun", "Positio
 b4 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler Modificado", "Position", [ 40 27 175 30], "tag","modif", "callback","getMetodo(b4)");
 b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "Position", [ 40 0 225 30 ], "tag","todos", "callback","getMetodo(b5)");
 
-inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoInicial, gp];
+inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoInicial];
 
-btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback","entrada=btnResolver(inputBox)");
+btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback","btnResolver(inputBox, gp)");
 btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 130 150 40]);
 
 %[T, L_X] = table (X)
