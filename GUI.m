@@ -98,6 +98,7 @@ function [entrada metodo]= btnResolver(editText, gp)
     hold off;
     salida = "t\tw(i)\tf(i)\n";
     formato = '%1.0f\t%3.4f\t%3.4f\n';
+    msgbox("La salida se desplegara en la consola","Salida", "warn");
     for i=1:entrada(5)
       if metodo == 'todos'
         fprintf('%1.0f\t%1.4f\tEuler = %1.4f\tPMedio = %1.4f\tHeun = %1.4f\tE. Mod = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i));  
@@ -147,7 +148,7 @@ inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoIn
 
 S.ejes = axes('Position',[0.57 0.1 0.4 0.7]);
 
-btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 350 150 40], "callback","btnResolver(inputBox, gp)");
+btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 350 150 40], "callback","btnResolver(inputBox, gp);");
 btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 350 150 40]);
 
 %[T, L_X] = table (X)
