@@ -3,7 +3,7 @@ clc;clear;
 function graficar(t, w, lbl, lineS, m, c)
   g1 = plot(t, w,"linestyle",lineS, "marker",m, "color",c);
   set(g1, 'LineWidth', 2);
-  legend(lbl);
+  legend([lbl]);
   ylabel('w');
   xlabel('t');
 endfunction
@@ -63,7 +63,7 @@ function [entrada metodo]= btnResolver(editText, gp)
   entrada(5)=str2num(get(editText(5),'string'));
   entrada(6)=str2num(get(editText(6),'string'));
   metodo=get(get(gp,'selectedobject'),'tag')
-  figure;
+  f=figure();
   hold on;
   grid on;
   f=Funcion(entrada(1),entrada(2),entrada(4),entrada(6)); 
@@ -83,23 +83,29 @@ function [entrada metodo]= btnResolver(editText, gp)
     case "modif"
       title("Euler modificado");
       [t,w]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
-      graficar(t, w, "Euler Modificado", "-.","diamond","o");
+      graficar(t, w, "Euler Modificado", "-.","d",[0.93725 0.94118 0.94510]);
     otherwise
       title("Todos los Metodos");
-      [t w]=Euler(entrada(3),entrada(4),entrada(5),entrada(6),f);
-      graficar(t, w,"Euler","--","*","r");
-      [t w]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(6),f);
-      graficar(t, w, "PuntoMedio", "-", "o", "g");
-      [t w]=Heun(entrada(3),entrada(4),entrada(5),entrada(6),f);
-      graficar(t, w, "Heun", ":", "x", "b");
-      [t w]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
-      graficar(t, w, "Euler Modificado", "-.","diamond","o");
+      [t w1]=Euler(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w1,"Euler","--","*","r");
+      [t w2]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w2, "PuntoMedio", "-", "o", "g");
+      [t w3]=Heun(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w3, "Heun", ":", "x", "b");
+      [t w4]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
+      graficar(t, w4, "Euler Modificado", "-.","d",[0.93725 0.94118 0.94510]);
     end
     hold off;
-    salida = strcat(salida,"t, w(i) f(i)");
-    for i=1:entrada(3)
-      salida=get(txt1,"String");
-      salida=strcat(salida,"%d %d %f\n");
+    salida = "t\tw(i)\tf(i)\n";
+    formato = '%1.0f\t%3.4f\t%3.4f\n';
+    for i=1:entrada(5)
+      if metodo == 'todos'
+        fprintf('%1.0f\t%1.4f\tEuler = %1.4f\tPMedio = %1.4f\tHeun = %1.4f\tE. Mod = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i));  
+      else
+        fprintf(formato,i, t(i), w(i));
+      end
+#      salida1=strcat(,salida);
+      #set(editText(7),'string',salida);
     endfor
   #set(hEdit3, 'String',[t w]);
 endfunction
@@ -108,44 +114,42 @@ function entrada = getMetodo(h)
   entrada=get(h,'tag');
 endfunction
 
-f = dialog ("name", "Ecuación Deferencial No Lineal", "position", [250 180 825 420]);
+S.f = figure("units","pixel","name", "Ecuación Deferencial No Lineal", "position", [250 50 825 650],"numbertitle","off", "menubar","none");
 
-gpp = uibuttongroup(f, "title", "SOLUCIÓN NUMÉRICA DE LA ECUACIÓN DIFERENCIAL NO LINEAL QUE DESCRIBE LAS OSCILACIONES DEL PÉNDULO SIMPLE ", "position",[0.01 0.01 0.98 0.98]);
-gp1 = uibuttongroup (gpp, "title","Ingresar Datos","Position", [ 0.05 0.47 0.55 0.4]);
+gpp = uibuttongroup(S.f, "title", "SOLUCIÓN NUMÉRICA DE LA ECUACIÓN DIFERENCIAL NO LINEAL QUE DESCRIBE LAS OSCILACIONES DEL PÉNDULO SIMPLE ", "position",[0.01 0.01 0.98 0.98], "backgroundcolor","white");
+gp1 = uibuttongroup (gpp, "title","Ingresar Datos","Position", [ 0.05 0.65 0.55 0.3],"backgroundcolor","white");
 
-lblLongitud = uicontrol (gp1, "style", "text", "string", "Longitud:", "position",[0 95 120 22]);
-txtLongitud = uicontrol (gp1, "style", "edit", "position",[125 95 80 22]);
-lblGravedad = uicontrol (gp1, "style", "text", "string", "Gravedad:", "position",[0 60 120 22]);
-txtGravedad = uicontrol (gp1, "style", "edit", "position",[125 60 80 22]);
-lblIte = uicontrol (gp1, "style", "text", "string", "N° de iteraciones:", "position",[0 25 120 22 ]);
-txtIte = uicontrol (gp1, "style", "edit", "position",[125 25 80 22 ]);
-lblInferior = uicontrol (gp1, "style", "text", "string", "Límite inferior:", "position",[225 95 120 22]);
-txtInferior = uicontrol (gp1, "style", "edit", "position",[350 95 80 22]);
-lblSuperior = uicontrol (gp1, "style", "text", "string", "Límite superior:", "position",[225 60 120 22]);
-txtSuperior = uicontrol (gp1, "style", "edit","position",[350 60 80 22]);
-lblPuntoInicial = uicontrol (gp1, "style", "text", "string", "Valor inicial:", "position",[225 25 120 22]);
-txtPuntoInicial = uicontrol (gp1, "style", "edit", "position",[350 25 80 22 ]);
+lblLongitud = uicontrol (gp1, "style", "text", "string", "Longitud:", "position",[0 130 120 22],"backgroundcolor","white");
+txtLongitud = uicontrol (gp1, "style", "edit", "position",[125 130 80 22],"backgroundcolor","white");
+lblGravedad = uicontrol (gp1, "style", "text", "string", "Gravedad:", "position",[0 95 120 22],"backgroundcolor","white");
+txtGravedad = uicontrol (gp1, "style", "edit", "position",[125 95 80 22],"backgroundcolor","white");
+lblIte = uicontrol (gp1, "style", "text", "string", "N° de iteraciones:", "position",[0 55 120 22 ],"backgroundcolor","white");
+txtIte = uicontrol (gp1, "style", "edit", "position",[125 55 80 22 ],"backgroundcolor","white");
+lblInferior = uicontrol (gp1, "style", "text", "string", "Límite inferior:", "position",[225 130 120 22],"backgroundcolor","white");
+txtInferior = uicontrol (gp1, "style", "edit", "position",[350 130 80 22],"backgroundcolor","white");
+lblSuperior = uicontrol (gp1, "style", "text", "string", "Límite superior:", "position",[225 95 120 22],"backgroundcolor","white");
+txtSuperior = uicontrol (gp1, "style", "edit","position",[350 95 80 22],"backgroundcolor","white");
+lblPuntoInicial = uicontrol (gp1, "style", "text", "string", "Valor inicial:", "position",[225 55 120 22],"backgroundcolor","white");
+txtPuntoInicial = uicontrol (gp1, "style", "edit", "position",[350 55 80 22 ],"backgroundcolor","white");
 
-gp = uibuttongroup (gpp, "Position", [ 0.65 0.47 0.29 0.4], "title","Elegir Método Númerico");
+gp = uibuttongroup (gpp, "Position", [ 0.65 0.65 0.29 0.3], "title","Elegir Método Númerico","backgroundcolor","white");
 % create a buttons in the group
-b1 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler", "Position", [ 40 108 150 30 ], "tag","euler", "callback","getMetodo(b1)");
-b2 = uicontrol (gp, "style", "radiobutton", "string", "Método del Punto Medio", "Position", [ 40 81 175 30], "tag","medio", "callback","getMetodo(b2)");
-b3 = uicontrol (gp, "style", "radiobutton", "string", "Método de Heun", "Position", [ 40 54 150 30], "tag","heun", "callback","getMetodo(b3)");
-b4 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler Modificado", "Position", [ 40 27 175 30], "tag","modif", "callback","getMetodo(b4)");
-b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "Position", [ 40 0 225 30 ], "tag","todos", "callback","getMetodo(b5)");
+b1 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler", "Position", [ 40 130 150 30 ], "tag","euler", "callback","getMetodo(b1)","backgroundcolor","white");
+b2 = uicontrol (gp, "style", "radiobutton", "string", "Método del Punto Medio", "Position", [ 40 100 175 30], "tag","medio", "callback","getMetodo(b2)","backgroundcolor","white");
+b3 = uicontrol (gp, "style", "radiobutton", "string", "Método de Heun", "Position", [ 40 70 150 30], "tag","heun", "callback","getMetodo(b3)","backgroundcolor","white");
+b4 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler Modificado", "Position", [ 40 40 175 30], "tag","modif", "callback","getMetodo(b4)","backgroundcolor","white");
+b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "Position", [ 40 10 225 30 ], "tag","todos", "callback","getMetodo(b5)","backgroundcolor","white");
+
+gp2 =  uibuttongroup(gpp, "Position", [0.05, 0.01, 0.89 0.55], "title", "Salida","backgroundcolor","white");
+#txtOut = uicontrol(gp2,"style","edit", "Position",[5 15 700 150],"enable" , "off");
 
 inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoInicial];
 
-btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback",[entrada metodo]=@btnResolver(inputBox, gp));
-btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 130 150 40]);
+S.ejes = axes('Position',[0.57 0.1 0.4 0.7]);
 
-<<<<<<< HEAD
-entrada
+btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 350 150 40], "callback","btnResolver(inputBox, gp)");
+btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 350 150 40]);
 
-hEdit = uicontrol('Style','text', 'Position',[300 20 180 100], 'String','');
-=======
-txt1 = uicontrol("Style","edit", "Position",[300 20 180 100],"enable" , "off");
->>>>>>> f998d6b7b2b0f12fde2a8d08b9b8ec228bff6099
 %[T, L_X] = table (X)
 %[T, Valor, Error] = table (2, 4);
 %fprinf('\n ti,wi,yi=y(ti), Error') 
