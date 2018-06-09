@@ -1,18 +1,18 @@
 clc;clear;
 
-function graficar(x, w, lbl, lineS, m, c)
-  g1 = plot(t, w,lbl,"linestyle",lineS, "marker",m, "color",c);
+function graficar(t, w, lbl, lineS, m, c)
+  g1 = plot(t, w,"linestyle",lineS, "marker",m, "color",c);
   set(g1, 'LineWidth', 2);
   legend(lbl);
-  ylabel('t');
-  xlabel('w');
+  ylabel('w');
+  xlabel('t');
 endfunction
 
 
 function f=Funcion(l,g,ya,a)
   t(1)=a;
   w(1)=ya;
-  f=[w, -(g/l)*sin(t)]
+  f=@(t,w) -(g/l)*sin(t);
 endfunction
 
 function [t w]=Euler(a,b,N, ya,f)
@@ -40,8 +40,8 @@ function [t w]=EulerModificado(a,b,N,ya,f)
   t(1)=a;
   w(1)=ya;
   for i=1:N
-    w(i+1)=w(i)+h*(f(t(i),w(i))+f(t(i-1),w(i)+h*f(t(i),w(i))))/2;
     t(i+1)=a+i*h;
+    w(i+1)=w(i)+h*(f(t(i),w(i))+f(t(i+1),w(i)+h*f(t(i),w(i))))/2;
   endfor
 endfunction
 
@@ -96,7 +96,12 @@ function [entrada metodo]= btnResolver(editText, gp)
       graficar(t, w, "Euler Modificado", "-.","diamond","o");
     end
     hold off;
-  set(hEdit3, 'String',[t w]);
+    salida = strcat(salida,"t, w(i) f(i)");
+    for i=1:entrada(3)
+      salida=get(txt1,"String");
+      salida=strcat(salida,"%d %d %f\n");
+    endfor
+  #set(hEdit3, 'String',[t w]);
 endfunction
 
 function entrada = getMetodo(h) 
@@ -121,12 +126,6 @@ txtSuperior = uicontrol (gp1, "style", "edit","position",[350 60 80 22]);
 lblPuntoInicial = uicontrol (gp1, "style", "text", "string", "Valor inicial:", "position",[225 25 120 22]);
 txtPuntoInicial = uicontrol (gp1, "style", "edit", "position",[350 25 80 22 ]);
 
-%c1 = uicontrol (f, "style", "radiobutton", "string", "Método de Euler", "position",[50 110 150 40]);
-%c2 = uicontrol (f, "style", "radiobutton", "string", "Método del Punto Medio", "position",[250 80 175 40]);
-%c3 = uicontrol (f, "style", "radiobutton", "string", "Método de Heun", "position",[50 80 150 40]);
-%c4 = uicontrol (f, "style", "radiobutton", "string", "Método de Runge-Kutta", "position",[50 50 175 40]);
-%c5 = uicontrol (f, "style", "radiobutton", "string", "Todos los anteriores", "position",[250 50 225 40]);
-
 gp = uibuttongroup (gpp, "Position", [ 0.65 0.47 0.29 0.4], "title","Elegir Método Númerico");
 % create a buttons in the group
 b1 = uicontrol (gp, "style", "radiobutton", "string", "Método de Euler", "Position", [ 40 108 150 30 ], "tag","euler", "callback","getMetodo(b1)");
@@ -140,9 +139,13 @@ inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoIn
 btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback",[entrada metodo]=@btnResolver(inputBox, gp));
 btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 130 150 40]);
 
+<<<<<<< HEAD
 entrada
 
 hEdit = uicontrol('Style','text', 'Position',[300 20 180 100], 'String','');
+=======
+txt1 = uicontrol("Style","edit", "Position",[300 20 180 100],"enable" , "off");
+>>>>>>> f998d6b7b2b0f12fde2a8d08b9b8ec228bff6099
 %[T, L_X] = table (X)
 %[T, Valor, Error] = table (2, 4);
-%fprinf('\n ti,wi,yi=y(ti), Error')
+%fprinf('\n ti,wi,yi=y(ti), Error') 
