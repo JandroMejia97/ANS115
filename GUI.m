@@ -96,12 +96,12 @@ function [entrada metodo]= btnResolver(editText, gp)
       graficar(t, w4, "Euler Modificado", "-.","d",[0.93725 0.94118 0.94510]);
     end
     hold off;
-    salida = "t\tw(i)\tf(i)\n";
     formato = '%1.0f\t%3.4f\t%3.4f\n';
+    fprintf('Donde: \nE --> Euler, PM --> Punto Medio\nH --> Heun, EM --> Euler Modificado');
     msgbox("La salida se desplegara en la consola","Salida", "warn");
     for i=1:entrada(5)
       if metodo == 'todos'
-        fprintf('%1.0f\t%1.4f\tEuler = %1.4f\tPMedio = %1.4f\tHeun = %1.4f\tE. Mod = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i));  
+        fprintf('%2.0f\t%3.4f\tE = %1.4f\tPM = %1.4f\tH = %1.4f\tEM = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i));  
       else
         fprintf(formato,i, t(i), w(i));
       end
