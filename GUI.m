@@ -137,8 +137,10 @@ b5 = uicontrol (gp, "style", "radiobutton", "string", "Todos los anteriores", "P
 
 inputBox=[txtLongitud, txtGravedad, txtInferior, txtSuperior, txtIte, txtPuntoInicial];
 
-btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback","btnResolver(inputBox, gp)");
+btn1 = uicontrol (gpp, "string", "Resolver", "position",[250 130 150 40], "callback",[entrada metodo]=@btnResolver(inputBox, gp));
 btn2 = uicontrol (gpp, "string", "Ver gráficos", "position",[420 130 150 40]);
+
+entrada
 
 hEdit = uicontrol('Style','text', 'Position',[300 20 180 100], 'String','');
 %[T, L_X] = table (X)
