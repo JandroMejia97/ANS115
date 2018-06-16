@@ -1,12 +1,6 @@
 clc;clear;
 warning off;
 
-function graficar(S, t, x, lbl, lineS, m, c)
-  
-  
-endfunction
-
-
 function [t x]=exacta(gravedad, longitud, posIni, velIni, limInf, limSup)
   x0(1) = posIni; %posicion incial
   x0(2) = velIni;
@@ -17,13 +11,13 @@ function [t x]=exacta(gravedad, longitud, posIni, velIni, limInf, limSup)
   [t,x] = ode45(g, tspan, x0);
 endfunction
 
-function [t w]=Euler(a,b,N, ya,f)
+function [t w]=Euler(a,b,N,ya,f)
   h=(b-a)/N;
   t(1)=a;
   w(1)=ya;
   for i=1:N
-    w(i+1)=w(i)+h*f(t(i),w(i));
     t(i+1)=a+i*h;
+    w(i+1)=w(i)+h*f(t(i),w(i));
   endfor
 endfunction
 
@@ -32,8 +26,22 @@ function [t w]=PuntoMedio(a,b,N,ya,f)
   t(1)=a;
   w(1)=ya;
   for i=1:N
-    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h*f(t(i),w(i))/2);
     t(i+1)=a+i*h;
+    w(i+1)=w(i)+h*f(t(i)+h/2,w(i)+h/2*f(t(i),w(i)));
+  endfor
+endfunction
+
+function [t w]=RungeKutta(a,b,N,ya,f)
+  h=(b-a)/N;
+  t(1)=a;
+  w(1)=ya;
+  for i=1:N
+    t(i+1)=a+i*h;
+    k1=f(t(i), w(i));
+    k2=f(t(i)+ (h/2), w(i) + (h/2)*k1);
+    k3=f(t(i)+ (h/2), w(i) + (h/2)*k2);
+    k4=f(t(i)+ h, w(i) + h*k3);
+    w(i+1)=w(i) + h*((k1/6)+(k2/3)+(k3/3)+(k4/6));
   endfor
 endfunction
 
@@ -43,24 +51,26 @@ function [t w]=EulerModificado(a,b,N,ya,f)
   w(1)=ya;
   for i=1:N
     t(i+1)=a+i*h;
-    w(i+1)=w(i)+h*(f(t(i),w(i))+f(t(i+1),w(i)+h*f(t(i),w(i))))/2;
+    w(i+1)=w(i)+h*(f(t(i)+h/2,w(i)+(h/2)*f(t(i),w(i))));
   endfor
 endfunction
 
-function [t w]=Heun(a,b,N,ya,f)
-  h=(b-a)/N;
-  t(1)=a;
-  w(1)=ya;
-  for i=1:N
-    w(i+1)=w(i)+h*(f(t(i),w(i))+3*f(t(i)+2*h/3,w(i)+2*h*f(t(i),w(i))/3))/4;
-    t(i+1)=a+i*h;
-  endfor
-endfunction
+%function [t w]=Heun(a,b,N,ya,f)
+%  h=(b-a)/N;
+%  t(1)=a;
+%  w(1)=ya;
+%  for i=1:N
+%    t(i+1) = a + i*h;
+%    w(i+1) = w(i) + (h/2)*(f(t(i),w(i)) + f(t(i+1), w(i) + h*f(t(i),w(i))));
+%    %w(i+1) = w(i) + (h/2)*(f(t(i),w(i)) + f(t(i) + h, w(i) + h*f(t(i),w(i))));
+%  endfor
+%endfunction
 
 function [entrada metodo]= btnResolver(varargin)
   S=varargin{3};
   entrada=str2double(get(S.txt(1:7),'string'));
   metodo = get(S.pop, {'str', 'value'});
+  entrada(7) = deg2rad (entrada(7));
   if (entrada(1) <=0 |entrada(2) <=0|entrada(3) <=0|entrada(4) <0|entrada(5) <=0 |entrada(6) <0 | entrada(7) < 0)
     msgbox("Las entradas no deben ser negativas ni texto","Entrada", "warn");
   else
@@ -73,37 +83,69 @@ function [entrada metodo]= btnResolver(varargin)
     ylabel('\theta')
     switch metodo{1}{metodo{2}}
       case "Método de Euler"
-        [t,w]=Euler(entrada(4),entrada(4),entrada(3),entrada(7),f);
+        [t,w]=Euler(entrada(4),entrada(5),entrada(3),entrada(7),f);
         set(S.ejes, 'title', 'Método de Euler')
         plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Euler", "Exacta",'location','southwest');
+        msgbox("La salida se desplegara en la consola","Salida", "warn");
+        for i=1:entrada(3)
+          w(i) = abs(w(i));
+          xx(i) = abs(xx(i));
+          e(i) = abs(xx(i) - w(i));
+          fprintf('%1.0f\tt=%3.4f\tE w=%3.4f\tS w=%3.4f \t Error = %3.4f\n',i, t(i), w(i), xx(i), e(i));
+        endfor
       case "Método del Punto Medio"
         set(S.ejes, 'title', 'Método del Punto Medio')
-        [t,w]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(6),f);
-        plot(S.ejes, t, w, "linestyle","--", "marker","*", "color","r", tt, xx(:,1), "-xb");
+        [t,w]=PuntoMedio(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Punto Medio", "Exacta",'location','southwest');
-      case "Método de Heun"
-        title("Heun");
-        [t,w]=Heun(entrada(3),entrada(4),entrada(5),entrada(6),f);
-        plot(S.ejes, t, w, "linestyle","--", "marker","*", "color","r", tt, xx(:,1), "", "linestyle", "-", "marker", "x", "color", "b");
-        legend("Heun", "Exacta",'location','southwest');
+        msgbox("La salida se desplegara en la consola","Salida", "warn");
+        for i=1:entrada(3)
+          w(i) = abs(w(i));
+          xx(i) = abs(xx(i));
+          e(i) = abs(xx(i) - w(i));
+          fprintf('%1.0f\tt=%3.4f\tPM w=%3.4f\tS w=%3.4f \t Error = %3.4f\n',i, t(i), w(i), xx(i), e(i));
+        endfor
+      case "Método de Runge Kutta"
+        set(S.ejes, 'title', 'Método de Runge Kutta')
+        [t,w]=RungeKutta(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
+        legend("Runge Kutta", "Exacta",'location','southwest');
+        msgbox("La salida se desplegara en la consola","Salida", "warn");
+        for i=1:entrada(3)
+          w(i) = abs(w(i));
+          xx(i) = abs(xx(i));
+          e(i) = abs(xx(i) - w(i));
+          fprintf('%1.0f\tt=%3.4f\tRK w=%3.4f\tS w=%3.4f \t Error = %3.4f\n',i, t(i), w(i), xx(i), e(i));
+        endfor
       case "Método de Euler Modificado"
-        title("Euler modificado");
-        [t,w]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
-        plot(S.ejes, t, w, "linestyle","--", "marker","*", "color","r", tt, xx(:,1), "linestyle", "-", "marker", "x", "color", "b");
+        set(S.ejes, 'title', 'Método de Euler modificado')
+        [t,w]=EulerModificado(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Euler Modificado", "Exacta",'location','southwest');
+        msgbox("La salida se desplegara en la consola","Salida", "warn");
+        for i=1:entrada(3)
+          w(i) = abs(w(i));
+          xx(i) = abs(xx(i));
+          e(i) = abs(xx(i) - w(i));
+          fprintf('%1.0f\tt=%3.4f\tEM w=%3.4f\tS w=%3.4f \t Error = %3.4f\n',i, t(i), w(i), xx(i), e(i));
+        endfor
       otherwise
         title("Todos los Metodos");
-        [t w1]=Euler(entrada(3),entrada(4),entrada(5),entrada(6),f);
-        [t w2]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(6),f);
-        [t w3]=Heun(entrada(3),entrada(4),entrada(5),entrada(6),f);
-        [t w4]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(6),f);
+        [t w1]=Euler(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t w2]=PuntoMedio(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t w3]=RungeKutta(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t w4]=EulerModificado(entrada(4),entrada(5),entrada(3),entrada(7),f);
         plot(S.ejes, t, w1, "linestyle","--", "marker","*", "color","r",...
               t, w2, "linestyle","-", "marker","o", "color","b",...
               t, w3, "linestyle",":", "marker","*", "color","m",...
               t, w4, "linestyle","-.", "marker","d", "color","g",...
               tt, xx(:,1), "", "linestyle", "-", "marker", "x", "color", "k");
-        legend("Euler", "Punto Medio", "Heun", "Euler Modificado", "Exacta",'location','southwest');
+        legend("Euler", "Punto Medio", "Runge Kutta", "Euler Modificado", "Exacta",'location','southwest');
+        msgbox("La salida se desplegara en la consola","Salida", "warn");
+        for i=1:entrada(3)
+          fprintf('%2.0f\t%3.4f\tE = %1.4f\tPM = %1.4f\tRK = %1.4f\tEM = %3.4f\tS = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i),xx(i));
+        endfor
       end
       xlim("auto");
       ylim("auto");
@@ -112,13 +154,13 @@ function [entrada metodo]= btnResolver(varargin)
       fprintf('Donde: \nE --> Euler, PM --> Punto Medio\nH --> Heun, EM --> Euler Modificado');
       %msgbox("La salida se desplegara en la consola","Salida", "warn");
       %for i=1:entrada(5)
-        %if metodo{1}{metodo{2}} == "Todos los anteriores"
-          %fprintf('%2.0f\t%3.4f\tE = %1.4f\tPM = %1.4f\tH = %1.4f\tEM = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i));  
-        %else
-         % fprintf(formato,i, t(i), w(i));
-        %end
-  #      salida1=strcat(,salida);
-        #set(editText(7),'string',salida);
+      %  if metodo{1}{metodo{2}} == "Todos los anteriores"
+      %    fprintf('%2.0f\t%3.4f\tE = %1.4f\tPM = %1.4f\tH = %1.4f\tEM = %3.4f\n',i, t(i), w1(i),w2(i), w3(i),w4(i));  
+      %  else
+      %    fprintf(formato,i, t(i), w(i));
+      %  end
+        %salida1=strcat(,salida);
+        %set(editText(7),'string',salida);
       %endfor
     #set(hEdit3, 'String',[t w]);
   end
@@ -149,7 +191,7 @@ S.lbl(5) = uicontrol (S.gp1, "style", "text", "string", "Límite superior:", "pos
 S.txt(5) = uicontrol (S.gp1, "style", "edit","position",[185 105 80 22], 'min', 0);
 S.lbl(6) = uicontrol (S.gp1, "style", "text", "string", "Velocidad inicial:", "position",[30 65 120 22],"backgroundcolor","white");
 S.txt(6) = uicontrol (S.gp1, "style", "edit", "position",[185 65 80 22 ], 'min', 0);
-S.lbl(7) = uicontrol (S.gp1, "style", "text", "string", "Angulo inicial (radianes):", "position",[30 25 150 22],"backgroundcolor","white");
+S.lbl(7) = uicontrol (S.gp1, "style", "text", "string", "Angulo inicial:", "position",[30 25 150 22],"backgroundcolor","white");
 S.txt(7) = uicontrol (S.gp1, "style", "edit", "position",[185 25 80 22 ], 'min', 0);
 S.lb5 = uicontrol('style','text',...
                  'unit','pix',...
@@ -164,11 +206,10 @@ S.pop = uicontrol(S.gp2, "style", 'pop', 'unit', 'pix',...
                   "string", {'Elija una opcion';...
                   "Método de Euler";...
                   "Método del Punto Medio";...
-                  "Método de Heun";...
+                  "Método de Runge Kutta";...
                   "Método de Euler Modificado";...
                   "Todos los anteriores";});
                   
-
 S.ejes = axes('Position',[0.55 0.10 0.40 0.8]);
 S.bt(1) = uicontrol (S.gpp, "string", "Resolver", "position",[100 20 150 40], "callback",{@btnResolver, S});
 S.bt(2) = uicontrol (S.gpp, "string", "Limpiar", "position",[280 20 150 40], "callback",{@btnLimpiar, S});
@@ -180,4 +221,3 @@ S.bt(2) = uicontrol (S.gpp, "string", "Limpiar", "position",[280 20 150 40], "ca
 %b5 = uicontrol (gp2, "style", "radiobutton", "string", , "Position", [ 40 10 225 30 ], "tag","todos", "callback","getMetodo(b5)","backgroundcolor","white");
 
 %S.gp3 =  uipanel("Position", [0.05, 0.02, 0.89 0.54], "title", "Salida", "backgroundcolor","white");
-
