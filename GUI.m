@@ -11,7 +11,7 @@ function [t x]=exacta(gravedad, longitud, posIni, velIni, limInf, limSup)
   [t,x] = ode45(g, tspan, x0);
 endfunction
 
-function [t w]=Euler(a,b,N,ya,f)
+function [t w]=Euler(N,a,b,ya,f)
   h=(b-a)/N;
   t(1)=a;
   w(1)=ya;
@@ -21,7 +21,7 @@ function [t w]=Euler(a,b,N,ya,f)
   endfor
 endfunction
 
-function [t w]=PuntoMedio(a,b,N,ya,f)
+function [t w]=PuntoMedio(N,a,b,ya,f)
   h=(b-a)/N;
   t(1)=a;
   w(1)=ya;
@@ -31,7 +31,7 @@ function [t w]=PuntoMedio(a,b,N,ya,f)
   endfor
 endfunction
 
-function [t w]=RungeKutta(a,b,N,ya,f)
+function [t w]=RungeKutta(N,a,b,ya,f)
   h=(b-a)/N;
   t(1)=a;
   w(1)=ya;
@@ -45,7 +45,7 @@ function [t w]=RungeKutta(a,b,N,ya,f)
   endfor
 endfunction
 
-function [t w]=EulerModificado(a,b,N,ya,f)
+function [t w]=EulerModificado(N,a,b,ya,f)
   h=(b-a)/N;
   t(1)=a;
   w(1)=ya;
@@ -55,7 +55,7 @@ function [t w]=EulerModificado(a,b,N,ya,f)
   endfor
 endfunction
 
-%function [t w]=Heun(a,b,N,ya,f)
+%function [t w]=Heun(N,a,b,ya,f)
 %  h=(b-a)/N;
 %  t(1)=a;
 %  w(1)=ya;
@@ -83,7 +83,7 @@ function [entrada metodo]= btnResolver(varargin)
     ylabel('\theta')
     switch metodo{1}{metodo{2}}
       case "Método de Euler"
-        [t,w]=Euler(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t,w]=Euler(entrada(3),entrada(4),entrada(5),entrada(7),f);
         set(S.ejes, 'title', 'Método de Euler')
         plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Euler", "Exacta",'location','southwest');
@@ -96,7 +96,7 @@ function [entrada metodo]= btnResolver(varargin)
         endfor
       case "Método del Punto Medio"
         set(S.ejes, 'title', 'Método del Punto Medio')
-        [t,w]=PuntoMedio(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t,w]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(7),f);
         plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Punto Medio", "Exacta",'location','southwest');
         msgbox("La salida se desplegara en la consola","Salida", "warn");
@@ -108,7 +108,7 @@ function [entrada metodo]= btnResolver(varargin)
         endfor
       case "Método de Runge Kutta"
         set(S.ejes, 'title', 'Método de Runge Kutta')
-        [t,w]=RungeKutta(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t,w]=RungeKutta(entrada(3),entrada(4),entrada(5),entrada(7),f);
         plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Runge Kutta", "Exacta",'location','southwest');
         msgbox("La salida se desplegara en la consola","Salida", "warn");
@@ -120,7 +120,7 @@ function [entrada metodo]= btnResolver(varargin)
         endfor
       case "Método de Euler Modificado"
         set(S.ejes, 'title', 'Método de Euler modificado')
-        [t,w]=EulerModificado(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t,w]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(7),f);
         plot(S.ejes, t, w, "--*r", tt, xx, "", "linestyle", "-", "marker", "x", "color", "b");
         legend("Euler Modificado", "Exacta",'location','southwest');
         msgbox("La salida se desplegara en la consola","Salida", "warn");
@@ -132,10 +132,10 @@ function [entrada metodo]= btnResolver(varargin)
         endfor
       otherwise
         title("Todos los Metodos");
-        [t w1]=Euler(entrada(4),entrada(5),entrada(3),entrada(7),f);
-        [t w2]=PuntoMedio(entrada(4),entrada(5),entrada(3),entrada(7),f);
-        [t w3]=RungeKutta(entrada(4),entrada(5),entrada(3),entrada(7),f);
-        [t w4]=EulerModificado(entrada(4),entrada(5),entrada(3),entrada(7),f);
+        [t w1]=Euler(entrada(3),entrada(4),entrada(5),entrada(7),f);
+        [t w2]=PuntoMedio(entrada(3),entrada(4),entrada(5),entrada(7),f);
+        [t w3]=RungeKutta(entrada(3),entrada(4),entrada(5),entrada(7),f);
+        [t w4]=EulerModificado(entrada(3),entrada(4),entrada(5),entrada(7),f);
         plot(S.ejes, t, w1, "linestyle","--", "marker","*", "color","r",...
               t, w2, "linestyle","-", "marker","o", "color","b",...
               t, w3, "linestyle",":", "marker","*", "color","m",...
